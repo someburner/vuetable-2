@@ -105,8 +105,6 @@
 
 <script>
 import Vue from 'vue'
-import VueResource from 'vue-resource'
-Vue.use(VueResource)
 
 export default {
   props: {
@@ -311,17 +309,26 @@ export default {
     loadData: function(success = this.loadSuccess, failed = this.loadFailed) {
       this.fireEvent('loading')
 
-      this.httpOptions['params'] = this.getAllQueryParams()
-
-      Vue.http.get(this.apiUrl, this.httpOptions).then(
+      // Use Axios
+      Vue.$http({
+        method: 'post',
+        url: process.env.FLOWER_TASK_PREFIX + this.apiUrl,
+        port: process.env.FLOWER_PORT,
+      }).then(
         success,
         failed
       )
+      // this.httpOptions['params'] = this.getAllQueryParams()
+      //
+      // Vue.http.get(this.apiUrl, this.httpOptions).then(
+      //   success,
+      //   failed
+      // )
     },
     loadSuccess: function(response) {
       this.fireEvent('load-success', response)
 
-      let body = this.transform(response.body)
+      let body = this.transform(response.data)
 
       this.tableData = this.getObjectValue(body, this.dataPath, null)
       this.tablePagination = this.getObjectValue(body, this.paginationPath, null)
