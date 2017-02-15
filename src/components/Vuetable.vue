@@ -326,9 +326,15 @@ export default {
       // )
     },
     loadSuccess: function(response) {
+      // console.log('vuetable got resp: ', response)
       this.fireEvent('load-success', response)
-
-      let body = this.transform(response.data)
+      let body = ''
+      if (response.data.hasOwnProperty('result')) {
+        body = this.transform(JSON.parse(response.data.result))
+      } else {
+        body = this.transform(response.data)
+      }
+      // console.log('vuetable transform body:', body)
 
       this.tableData = this.getObjectValue(body, this.dataPath, null)
       this.tablePagination = this.getObjectValue(body, this.paginationPath, null)
