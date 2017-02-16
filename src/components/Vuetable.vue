@@ -309,17 +309,17 @@ export default {
     loadData: function(success = this.loadSuccess, failed = this.loadFailed) {
       this.fireEvent('loading')
 
-      // Use Axios
+      /* Use Axios */
       Vue.$http({
         method: 'post',
-        url: process.env.FLOWER_TASK_PREFIX + this.apiUrl,
-        port: process.env.FLOWER_PORT,
+        url: process.env.FWD_API + process.env.FLOWER_TASK_PREFIX + this.apiUrl,
+        port: process.env.FWD_PORT
       }).then(
         success,
         failed
       )
+      /* Orig */
       // this.httpOptions['params'] = this.getAllQueryParams()
-      //
       // Vue.http.get(this.apiUrl, this.httpOptions).then(
       //   success,
       //   failed
