@@ -116,6 +116,15 @@ export default {
       type: Boolean,
       default: true
     },
+    eventPrefix: {
+      type: String,
+      required: false,
+      default: 'vuetable:'
+    },
+    loadDataCallback: {
+      type: String,
+      default: ''
+    },
     apiUrl: {
         type: String,
         default: ''
@@ -213,7 +222,6 @@ export default {
   },
   data: function() {
     return {
-      eventPrefix: 'vuetable:',
       tableData: null,
       tablePagination: null,
       currentPage: 1,
@@ -306,24 +314,17 @@ export default {
     notIn: function(str, arr) {
       return arr.indexOf(str) === -1
     },
-    loadData: function(success = this.loadSuccess, failed = this.loadFailed) {
-      this.fireEvent('loading')
-
-      /* Use Axios */
-      Vue.$http({
-        method: 'post',
-        url: process.env.FWD_API + process.env.FLOWER_TASK_PREFIX + this.apiUrl,
-        port: process.env.FWD_PORT
-      }).then(
-        success,
-        failed
-      )
-      /* Orig */
-      // this.httpOptions['params'] = this.getAllQueryParams()
-      // Vue.http.get(this.apiUrl, this.httpOptions).then(
-      //   success,
-      //   failed
-      // )
+    loadData: function() {
+      let func = this.loadDataCallback.trim()
+      // console.log('vuetable loadData - ', func)
+      let success = this.loadSuccess
+      let failed = this.loadFailed
+      if (func !== '' && typeof this.$parent[func] === 'function') {
+        this.fireEvent('loading')
+        this.$parent[func](success, failed)
+      } else {
+        failed('Invalid loadDataCallback name')
+      }
     },
     loadSuccess: function(response) {
       // console.log('vuetable got resp: ', response)
@@ -781,3 +782,4 @@ export default {
     margin-bottom: auto;
   }
 </style>
+
